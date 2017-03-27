@@ -5,6 +5,7 @@ int NowLength=0;
 int maxlength=0;
 int a[100];
 int b[100][100];
+int c[100][100];
 FILE *r;
 FILE *w;
 int Count(int *a)
@@ -54,6 +55,58 @@ int countDiff(int *a,int *b)//计算两个数组的不相似度
 {
    return 0;
 }
+int movc2b()
+{
+  for (int i=0;i<100;i++)
+	  for (int j=0;j<100;j++)
+		  b[i][j]=c[i][j];
+
+}
+void mergaTest(int *a,int *b)
+{
+	//merga
+	int cc[100];
+	int i=0,j=0;
+	cc[0]=0;
+	while (cc[0]<NowLength)
+	{
+		if (a[i]==b[j]){ cc[0]++;cc[cc[0]]=a[i];}
+		else
+		{
+			cc[0]++;cc[cc[0]]=a[i];
+			if (a[i]<b[j]) i++;
+		     else j++;
+		}
+	    if(i=NowLength) break;
+	}
+	int count=Count(cc);
+	if (count>=sup)
+	{
+		c[0][0]++;
+	    int tmp=c[0][0];
+		for (int i=1;i<100;i++) c[tmp][i]=cc[i];
+	}
+	i=0;j=0;
+	cc[0]=0;
+	while (cc[0]<NowLength)
+	{
+		if (a[i]==b[j]){ cc[0]++;cc[cc[0]]=a[i];}
+		else
+		{
+			cc[0]++;cc[cc[0]]=b[j];
+			if (a[i]<b[j]) i++;
+		     else j++;
+		}
+	    if(i=NowLength) break;
+	}
+	int count=Count(cc);
+	if (count>=sup)
+	{
+		c[0][0]++;
+	    int tmp=c[0][0];
+		for (int i=1;i<100;i++) c[tmp][i]=cc[i];
+	}
+}
 void get()
 {
 	for (int i=1;i<=b[0][0]-NowLength+1;i++)
@@ -66,7 +119,7 @@ void get()
 			}
 			if (countDiff(b[i],b[j])==1)
 			{
-			    
+			    mergaTest(b[i],b[j]);
 			}
 		 }
 	
