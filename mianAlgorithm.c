@@ -1,26 +1,30 @@
 #include<stdio.h>
-
+#include"StdAfx.h"
 int sup=3;
 int NowLength=0;
 int maxlength=0;
-int a[100];
-int b[100][100];
-int c[100][100];
+int a[10000];
+int b[10000][10000];//输出用的项集 
+int c[10000][10000];//中间过渡
 FILE *r;
 FILE *w;
 int Count(int *a)
 {
+	int count=0;
     for (int i=0;i<100000;i++)
        {
           int x;int p=0;
-          while ((scanf("%d",&x)!=EOF))
-          {
-             if (a[p]==x)  p++;
+		  char c=' ';
+		  while  (c!='\n')
+		  {
+			 fscanf(r,"%d%c",&x,&c);
+			 if (a[p]==x)  p++;
              if (a[p]<x) {p=0;continue;}
-             if (p==NowLength) return 1;
-          }
+             if (p==NowLength) count++;
+			 a[x]++;
+		  }
        }
-
+	return count;
 }
 int init()
 {
@@ -47,25 +51,41 @@ int init()
 	}
    return 0;
 }
-int countSim(int *a,int *b)// 计算两个数组的最大相似长度(认为是有序数组)
+int countSim(int *a,int *b,int l)// 计算两个数组的最大相似长度(认为是有序数组)
 {
-	return 0;
+	int c=0;
+    int i=1,j=1;
+	while ( i<=a[0] & j<b[0])
+	{
+		while (a[i]==a[j] && i<=a[0] && j<b[0]){i++;j++; c++;}
+		if (a[i]>a[j]) j++;
+		else if (a[j]>a[j]) i++;
+	}
+	return l;
 }
-int countDiff(int *a,int *b)//计算两个数组的不相似度
+int countDiff(int *a,int *b ,int x)//计算两个数组的不相似度
 {
+	int l=0;
+	int i=1,j=1;
+	while (l<2)
+	{
+		if (a[i]==b[j]){i++;j++;}if (i>x) break;if (j>x) break;
+		if (a[i]<b[j]){i++; l++;}if (i>x) break;
+		if (a[i]>b[j]){j++; l++;}if (j>x) break;
+	}
    return 0;
 }
 int movc2b()
 {
-  for (int i=0;i<100;i++)
-	  for (int j=0;j<100;j++)
+  for (int i=0;i<100000;i++)
+	  for (int j=0;j<100000;j++)
 		  b[i][j]=c[i][j];
-
+  return 0;
 }
-void mergaTest(int *a,int *b)
+void mergaTest(int *a,int *b)//将一定能够合并的数组合并起来
 {
 	//merga
-	int cc[100];
+	int cc[100000];//用于合并的数组
 	int i=0,j=0;
 	cc[0]=0;
 	while (cc[0]<NowLength)
@@ -77,14 +97,14 @@ void mergaTest(int *a,int *b)
 			if (a[i]<b[j]) i++;
 		     else j++;
 		}
-	    if(i=NowLength) break;
+	    if(cc[0]==NowLength) break;
 	}
 	int count=Count(cc);
 	if (count>=sup)
 	{
 		c[0][0]++;
 	    int tmp=c[0][0];
-		for (int i=1;i<100;i++) c[tmp][i]=cc[i];
+		for (int i=1;i<100000;i++) c[tmp][i]=cc[i];
 	}
 	i=0;j=0;
 	cc[0]=0;
@@ -97,14 +117,14 @@ void mergaTest(int *a,int *b)
 			if (a[i]<b[j]) i++;
 		     else j++;
 		}
-	    if(i=NowLength) break;
+	    if(i==NowLength) break;
 	}
-	int count=Count(cc);
+	count=Count(cc);
 	if (count>=sup)
 	{
 		c[0][0]++;
 	    int tmp=c[0][0];
-		for (int i=1;i<100;i++) c[tmp][i]=cc[i];
+		for (int i=1;i<100000;i++) c[tmp][i]=cc[i];
 	}
 }
 void get()
@@ -112,18 +132,11 @@ void get()
 	for (int i=1;i<=b[0][0]-NowLength+1;i++)
 		 for (int j=i+1;j<b[0][0];j++)
 		 {
-			int simlength=countSim(b[i],b[j]);
-			if (simlength==NowLength-2)
-			{
-
-			}
-			if (countDiff(b[i],b[j])==1)
+			if (countDiff(b[i],b[j],1)==1)
 			{
 			    mergaTest(b[i],b[j]);
 			}
 		 }
-	
-
 }
 int main()
 {
